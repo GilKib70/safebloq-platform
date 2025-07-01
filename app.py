@@ -16,105 +16,192 @@ st.set_page_config(
 
 # Custom CSS for dark/light theme and modern styling
 def load_css():
-    st.markdown("""
+    theme = st.session_state.get('theme', 'dark')
+    
+    if theme == 'dark':
+        bg_color = "#0e1117"
+        text_color = "#fafafa"
+        card_bg = "#262730"
+        border_color = "#4a4a4a"
+        sidebar_bg = "#1e1e1e"
+        input_bg = "#2d2d2d"
+        plotly_bg = "rgba(38, 39, 48, 0.8)"
+    else:
+        bg_color = "#ffffff"
+        text_color = "#262626"
+        card_bg = "#f8f9fa"
+        border_color = "#e0e0e0"
+        sidebar_bg = "#f0f2f6"
+        input_bg = "#ffffff"
+        plotly_bg = "rgba(248, 249, 250, 0.8)"
+    
+    st.markdown(f"""
     <style>
-    /* Global styles */
-    .main > div {
+    /* Global theme styles */
+    .stApp {{
+        background-color: {bg_color};
+        color: {text_color};
+    }}
+    
+    /* Sidebar styling */
+    .css-1d391kg {{
+        background-color: {sidebar_bg};
+    }}
+    
+    /* Main content area */
+    .main > div {{
         padding-top: 2rem;
-    }
+        background-color: {bg_color};
+    }}
     
     /* Header styling */
-    .safebloq-header {
+    .safebloq-header {{
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 1rem 0;
-        border-bottom: 2px solid #e0e0e0;
+        border-bottom: 2px solid {border_color};
         margin-bottom: 2rem;
-    }
+        background-color: {card_bg};
+        border-radius: 10px;
+        padding: 1.5rem;
+    }}
     
-    .safebloq-logo {
+    .safebloq-logo {{
         font-size: 2rem;
         font-weight: bold;
         color: #2E86AB;
-    }
+    }}
     
     /* Security score styling */
-    .security-score-container {
+    .security-score-container {{
         text-align: center;
         padding: 2rem;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 15px;
         color: white;
         margin-bottom: 2rem;
-    }
+    }}
     
-    .security-score {
+    .security-score {{
         font-size: 3rem;
         font-weight: bold;
         margin: 1rem 0;
-    }
+    }}
+    
+    /* Card styling */
+    .metric-card {{
+        background-color: {card_bg};
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid {border_color};
+        margin-bottom: 1rem;
+    }}
     
     /* Alert styling */
-    .alert-critical {
+    .alert-critical {{
         background-color: #ff4757;
         color: white;
         padding: 0.5rem;
         border-radius: 5px;
         margin: 0.2rem 0;
-    }
+    }}
     
-    .alert-warning {
+    .alert-warning {{
         background-color: #ffa726;
         color: white;
         padding: 0.5rem;
         border-radius: 5px;
         margin: 0.2rem 0;
-    }
+    }}
     
-    .alert-info {
+    .alert-info {{
         background-color: #42a5f5;
         color: white;
         padding: 0.5rem;
         border-radius: 5px;
         margin: 0.2rem 0;
-    }
+    }}
     
     /* Device status styling */
-    .device-secure {
+    .device-secure {{
         color: #4caf50;
         font-weight: bold;
-    }
+    }}
     
-    .device-risk {
+    .device-risk {{
         color: #ff5722;
         font-weight: bold;
-    }
+    }}
     
-    .device-warning {
+    .device-warning {{
         color: #ff9800;
         font-weight: bold;
-    }
+    }}
     
-    /* Dark mode toggle */
-    .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 999;
-    }
+    /* Container styling */
+    .device-container {{
+        background-color: {card_bg};
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid {border_color};
+        margin-bottom: 0.5rem;
+    }}
+    
+    /* Input styling */
+    .stTextInput > div > div > input {{
+        background-color: {input_bg};
+        color: {text_color};
+        border: 1px solid {border_color};
+    }}
+    
+    .stSelectbox > div > div > select {{
+        background-color: {input_bg};
+        color: {text_color};
+        border: 1px solid {border_color};
+    }}
+    
+    /* Plotly chart background */
+    .js-plotly-plot {{
+        background-color: {plotly_bg} !important;
+    }}
+    
+    /* Theme toggle button */
+    .theme-toggle {{
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: bold;
+    }}
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {{
+        background-color: {card_bg};
+        border: 1px solid {border_color};
+        border-radius: 5px;
+    }}
+    
+    /* Tab styling */
+    .stTabs > div > div > div > div {{
+        background-color: {card_bg};
+        border: 1px solid {border_color};
+        border-radius: 5px;
+    }}
     
     /* Mobile responsive */
-    @media (max-width: 768px) {
-        .safebloq-header {
+    @media (max-width: 768px) {{
+        .safebloq-header {{
             flex-direction: column;
             text-align: center;
-        }
+        }}
         
-        .security-score {
+        .security-score {{
             font-size: 2rem;
-        }
-    }
+        }}
+    }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -175,14 +262,25 @@ def generate_live_alerts():
 
 # Security score gauge
 def create_security_gauge(score):
+    theme = st.session_state.get('theme', 'dark')
+    
+    if theme == 'dark':
+        paper_bg = "rgba(38, 39, 48, 0.8)"
+        plot_bg = "rgba(38, 39, 48, 0.8)"
+        font_color = "#fafafa"
+    else:
+        paper_bg = "rgba(248, 249, 250, 0.8)"
+        plot_bg = "rgba(248, 249, 250, 0.8)"
+        font_color = "#262626"
+    
     fig = go.Figure(go.Indicator(
         mode = "gauge+number+delta",
         value = score,
         domain = {'x': [0, 1], 'y': [0, 1]},
-        title = {'text': "Security Score"},
+        title = {'text': "Security Score", 'font': {'color': font_color}},
         delta = {'reference': 85},
         gauge = {
-            'axis': {'range': [None, 100]},
+            'axis': {'range': [None, 100], 'tickcolor': font_color, 'tickfont': {'color': font_color}},
             'bar': {'color': "darkblue"},
             'steps': [
                 {'range': [0, 50], 'color': "lightgray"},
@@ -200,8 +298,9 @@ def create_security_gauge(score):
     fig.update_layout(
         height=300,
         margin=dict(l=20, r=20, t=50, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)"
+        paper_bgcolor=paper_bg,
+        plot_bgcolor=plot_bg,
+        font=dict(color=font_color)
     )
     
     return fig
@@ -209,6 +308,16 @@ def create_security_gauge(score):
 # Threat trends chart
 def create_threat_trends():
     df = generate_threat_data()
+    theme = st.session_state.get('theme', 'dark')
+    
+    if theme == 'dark':
+        paper_bg = "rgba(38, 39, 48, 0.8)"
+        plot_bg = "rgba(38, 39, 48, 0.8)"
+        font_color = "#fafafa"
+    else:
+        paper_bg = "rgba(248, 249, 250, 0.8)"
+        plot_bg = "rgba(248, 249, 250, 0.8)"
+        font_color = "#262626"
     
     fig = go.Figure()
     
@@ -231,8 +340,11 @@ def create_threat_trends():
         yaxis_title="Threats Detected",
         height=400,
         hovermode='x unified',
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)"
+        paper_bgcolor=paper_bg,
+        plot_bgcolor=plot_bg,
+        font=dict(color=font_color),
+        xaxis=dict(color=font_color),
+        yaxis=dict(color=font_color)
     )
     
     return fig
@@ -242,7 +354,7 @@ def main():
     load_css()
     
     # Header
-    st.markdown("""
+    st.markdown(f"""
     <div class="safebloq-header">
         <div class="safebloq-logo">🔐 Safebloq</div>
         <div>Zero Trust Security Platform</div>
@@ -260,7 +372,11 @@ def main():
         st.divider()
         
         # Theme toggle
-        if st.button("🌓 Toggle Theme"):
+        current_theme = st.session_state.get('theme', 'dark')
+        theme_emoji = "☀️" if current_theme == 'dark' else "🌙"
+        theme_text = "Light Mode" if current_theme == 'dark' else "Dark Mode"
+        
+        if st.button(f"{theme_emoji} {theme_text}"):
             st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
             st.rerun()
         
@@ -375,34 +491,34 @@ def show_devices():
     
     # Display devices
     for _, device in filtered_df.iterrows():
-        with st.container():
-            col1, col2, col3, col4, col5 = st.columns([2, 2, 1, 1, 1])
+        st.markdown('<div class="device-container">', unsafe_allow_html=True)
+        col1, col2, col3, col4, col5 = st.columns([2, 2, 1, 1, 1])
+        
+        with col1:
+            st.write(f"**{device['Device']}**")
+            st.write(device['User'])
+        
+        with col2:
+            st.write(device['OS'])
+            st.write(f"Last seen: {device['Last Seen'].strftime('%Y-%m-%d %H:%M')}")
+        
+        with col3:
+            status_class = {
+                'Secure': 'device-secure',
+                'At Risk': 'device-risk',
+                'Warning': 'device-warning',
+                'Updating': 'device-info'
+            }.get(device['Status'], '')
             
-            with col1:
-                st.write(f"**{device['Device']}**")
-                st.write(device['User'])
-            
-            with col2:
-                st.write(device['OS'])
-                st.write(f"Last seen: {device['Last Seen'].strftime('%Y-%m-%d %H:%M')}")
-            
-            with col3:
-                status_class = {
-                    'Secure': 'device-secure',
-                    'At Risk': 'device-risk',
-                    'Warning': 'device-warning',
-                    'Updating': 'device-info'
-                }.get(device['Status'], '')
-                
-                st.markdown(f'<span class="{status_class}">{device["Status"]}</span>', unsafe_allow_html=True)
-            
-            with col4:
-                st.write(f"Risk: {device['Risk Score']}%")
-            
-            with col5:
-                st.button("Manage", key=f"manage_{device['Device']}")
-            
-            st.divider()
+            st.markdown(f'<span class="{status_class}">{device["Status"]}</span>', unsafe_allow_html=True)
+        
+        with col4:
+            st.write(f"Risk: {device['Risk Score']}%")
+        
+        with col5:
+            st.button("Manage", key=f"manage_{device['Device']}")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 def show_reports():
     st.title("Security Reports")
@@ -490,28 +606,28 @@ def show_team():
     ]
     
     for member in team_members:
-        with st.container():
-            col1, col2, col3, col4, col5 = st.columns([2, 2, 1, 1, 1])
-            
-            with col1:
-                st.write(f"**{member['Name']}**")
-                st.write(member['Email'])
-            
-            with col2:
-                st.write(f"Role: {member['Role']}")
-                st.write(f"Last login: {member['Last Login']}")
-            
-            with col3:
-                status_color = "🟢" if member['Status'] == 'Active' else "🔴"
-                st.write(f"{status_color} {member['Status']}")
-            
-            with col4:
-                st.button("Edit", key=f"edit_{member['Email']}")
-            
-            with col5:
-                st.button("Remove", key=f"remove_{member['Email']}")
-            
-            st.divider()
+        st.markdown('<div class="device-container">', unsafe_allow_html=True)
+        col1, col2, col3, col4, col5 = st.columns([2, 2, 1, 1, 1])
+        
+        with col1:
+            st.write(f"**{member['Name']}**")
+            st.write(member['Email'])
+        
+        with col2:
+            st.write(f"Role: {member['Role']}")
+            st.write(f"Last login: {member['Last Login']}")
+        
+        with col3:
+            status_color = "🟢" if member['Status'] == 'Active' else "🔴"
+            st.write(f"{status_color} {member['Status']}")
+        
+        with col4:
+            st.button("Edit", key=f"edit_{member['Email']}")
+        
+        with col5:
+            st.button("Remove", key=f"remove_{member['Email']}")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 def show_support():
     st.title("Support & Documentation")
