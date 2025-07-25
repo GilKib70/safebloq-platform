@@ -7,3 +7,6 @@ PyJWT>=2.0
 reportlab
 matplotlib
 python-keycloak
+streamlit
+requests
+pyjwt[crypto]
