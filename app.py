@@ -5,6 +5,7 @@ import pandas as pd
 import random
 from datetime import datetime, timedelta
 import time
+import jwt
 
 # Page config
 st.set_page_config(
