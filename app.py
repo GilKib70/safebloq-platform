@@ -2225,4 +2225,5 @@ def show_team():
     team_members = [
         {"Name": "John Smith", "Email": "john@company.com", "Role": "Admin", "Status": "Active", "Last Login": "2 hours ago"},
         {"Name": "Sarah Johnson", "Email": "sarah@company.com", "Role": "Security Analyst", "Status": "Active", "Last Login": "1 day ago"},
-        {"Name": "Mike Davis", "Email": "mike@company.com", "Role": "Viewer", "Status": "Inactive", "Last Login": "1 week
+        {"Name": "Mike Davis", "Email": "mike@company.com", "Role": "Viewer", "Status": "Inactive", "Last Login": "1 week"}
+        ]
