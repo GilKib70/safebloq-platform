@@ -2228,3 +2228,21 @@ def show_team():
         {"Name": "Sarah Johnson", "Email": "sarah@company.com", "Role": "Security Analyst", "Status": "Active", "Last Login": "1 day ago"},
         {"Name": "Mike Davis", "Email": "mike@company.com", "Role": "Viewer", "Status": "Inactive", "Last Login": "1 week"}
         ]
+
+login_url = keycloak.get_auth_url(redirect_uri=REDIRECT_URI, state=session_state)
+st.markdown(f"[🔐 Login with Safebloq]({login_url})", unsafe_allow_html=True)
+query_params = st.experimental_get_query_params()
+if "code" in query_params:
+    code = query_params["code"][0]
+    token = keycloak.exchange_code_for_token(code, REDIRECT_URI)
+    if token:
+        st.session_state["access_token"] = token["access_token"]
+        st.session_state["user_info"] = keycloak.get_user_info(token["access_token"])
+        st.success(f"Welcome, {st.session_state['user_info'].get('preferred_username')}")
+if "access_token" in st.session_state and keycloak.verify_token(st.session_state["access_token"]):
+    # Show Safebloq dashboard
+    show_dashboard()
+else:
+    st.warning("Please log in to access your Safebloq dashboard.")
+
+
